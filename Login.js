@@ -1,12 +1,135 @@
 'use strict';
 import React from 'react';
-import { StyleSheet, View, Text, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, View, Text, TextInput, StatusBar, TouchableOpacity, Button, Modal, KeyboardAvoidingView, Alert } from 'react-native';
 
 export default class Login extends React.Component {
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+            signUpVisible: false,
+            signUpEmail: "",
+            signUpPassword: "",
+            signUpPasswordRepeat: "",
+            signUpErrors: false
+        };
+    }
+        
+    _toggleSignUp = () => {
+        
+        if(this.state.signUpVisible) {
+            this.setState({ signUpVisible: false });
+        } else {
+            this.setState({ signUpVisible: true });
+        }
+        
+    };
+    
+    _doSignup = () => {
+        
+        console.log(this.state.signUpEmail);
+        console.log(this.state.signUpPassword);
+        console.log(this.state.signUpPasswordRepeat);
+          
+    };
+    
+    _validateEmail = (email) => {
+        
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ ;
+
+        if(reg.test(email) === false) {
+            return false;
+        } else {
+            return true;
+        }
+        
+    }
+    
+    _checkSignUp = () => {
+        
+        var message = "";
+        
+        if(!this._validateEmail(this.state.signUpEmail)) {
+            message += "Please enter a valid email\n";
+            this.state.signUpErrors = true;
+        }
+        
+        if(this.state.signUpPassword == "") {
+            message += "Please enter a password";
+            this.state.signUpErrors = true;
+        } else if(this.state.signUpPassword != this.state.signUpPasswordRepeat) {
+            message += "Please enter matching passwords";
+            this.state.signUpErrors = true;
+        }
+        
+        if(this.state.signUpErrors) {
+            
+            /*
+            Alert.alert(
+                "Error",
+                message,
+                [
+                    {text: 'OK'}
+                ],
+                {cancelable: false}
+            )
+            */
+            console.log("Error");
+            
+        } else {
+            this._doSignup();
+        }
+        
+    }
+    
     render() {
         return (
             <View style={styles.outerView}>
                 <StatusBar barStyle="light-content" />
+                <Modal visible={this.state.signUpVisible} animationType = {"slide"} transparent = {true}>
+                    <KeyboardAvoidingView behavior="padding" style={styles.signUpView}>
+                        <Text style={styles.signUpTitle}>Sign up</Text>
+                        <TextInput
+                            style={[styles.signUpInput, styles.error]}
+                            placeholder="Email"
+                            value={this.state.signUpEmail}
+                            placeholderTextColor="rgba(255, 255, 255, .5);"
+                            onChangeText={signUpEmail => this.setState({signUpEmail})}
+                            returnKeyType="next"
+                            ref={(input) => this.emailInput = input}
+                            onSubmitEditing={() => this.passwordInput.focus()}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                        />
+                        <TextInput
+                            style={styles.signUpInput}
+                            placeholder="Password"
+                            placeholderTextColor="rgba(255, 255, 255, .5);"
+                            onChangeText={signUpPassword => this.setState({signUpPassword})}
+                            secureTextEntry
+                            returnKeyType="next"
+                            ref={(input) => this.passwordInput = input}
+                            onSubmitEditing={() => this.passwordRepeatInput.focus()}
+                        />
+                        <TextInput
+                            style={styles.signUpInput}
+                            placeholder="Repeat password"
+                            placeholderTextColor="rgba(255, 255, 255, .5);"
+                            onChangeText={signUpPasswordRepeat => this.setState({signUpPasswordRepeat})}
+                            secureTextEntry
+                            returnKeyType="go"
+                            ref={(input) => this.passwordRepeatInput = input}
+                        />
+                        <TouchableOpacity style={styles.signUpButton} onPress={this._checkSignUp}>
+                            <Text style={styles.signUpButtonText}>Sign up</Text>
+                        </TouchableOpacity>
+                        <Button onPress={this._toggleSignUp} title="Cancel" color="rgba(255, 255, 255, .7)" />
+                        <View style={styles.errorHandling}>
+                            <Text>Hejsa</Text>
+                        </View>
+                    </KeyboardAvoidingView>
+                </Modal>
                 <View style={styles.titleView}>
                     <Text style={styles.title}>Task<Text style={styles.opacity}>it</Text>.io</Text>
                     <Text style={styles.subtitle}>Simple Task Manager</Text>
@@ -14,6 +137,10 @@ export default class Login extends React.Component {
                 <View style={styles.loginFormView}>
                     <TextInput style={styles.input} placeholder="Email" />
                     <TextInput style={styles.input} placeholder="Password" />
+                    <TouchableOpacity style={styles.loginButton}>
+                        <Text style={styles.loginButtonText}>Login</Text>
+                    </TouchableOpacity>
+                    <Button onPress={this._toggleSignUp} title="Sign up" color="white" />
                 </View>
             </View>
         );
@@ -27,6 +154,13 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center"
+    },
+    signUpView: {
+        backgroundColor: "rgba(0, 0, 0, .9)",
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20
     },
     titleView: {
         flex: 1,
@@ -51,12 +185,66 @@ const styles = StyleSheet.create({
         padding: 20
     },
     input: {
-        backgroundColor: "rgba(255, 255, 255, .7);",
+        backgroundColor: "rgba(255, 255, 255, .5);",
         padding: 10,
         paddingTop: 15,
         paddingBottom: 15,
         fontSize: 18,
         borderRadius: 5,
-        marginBottom: 10
+        marginBottom: 10,
+        alignSelf: "stretch",
+    },
+    signUpInput: {
+        backgroundColor: "rgba(255, 255, 255, .2);",
+        padding: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        fontSize: 18,
+        borderRadius: 5,
+        marginBottom: 10,
+        alignSelf: "stretch",
+        color: "white"
+    },
+    loginButton: {
+        backgroundColor: "rgba(255, 255, 255, 1)",
+        alignItems: "center",
+        padding: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderRadius: 5,
+        marginBottom: 20,
+        alignSelf: "stretch"
+    },
+    loginButtonText: {
+        fontSize: 18,
+        color: "#4ba38d",
+        fontWeight: "700"
+    },
+    signUpTitle: {
+        fontSize: 32,
+        alignSelf: "stretch",
+        color: "white",
+        fontWeight: "600",
+        marginBottom: 20,
+        textAlign: "center"
+    },
+    signUpButton: {
+        backgroundColor: "#4ba38d",
+        alignItems: "center",
+        padding: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderRadius: 5,
+        marginBottom: 20,
+        alignSelf: "stretch"
+    },
+    signUpButtonText: {
+        fontSize: 18,
+        color: "white",
+        fontWeight: "700"
+    },
+    error: {
+        borderWidth: 1,
+        borderColor: "red"
     }
 });
