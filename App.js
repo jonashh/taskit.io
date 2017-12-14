@@ -1,23 +1,15 @@
 'use strict';
 import React from 'react';
-import { StyleSheet, NavigatorIOS } from 'react-native';
-import SearchPage from './SearchPage';
+import { StyleSheet, View } from 'react-native';
+import Login from './Login';
 
 export default class App extends React.Component {
     render() {
         return (
-            <NavigatorIOS
-                style={styles.container}
-                initialRoute={{
-                title: 'Property Finder',
-                component: SearchPage,
-            }}/>
+            <Login />
         );
     }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
 });
