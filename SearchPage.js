@@ -24,6 +24,7 @@ export default class SearchPage extends React.Component {
         <View style={styles.flowRight}>
           <TextInput style={styles.searchInput} placeholder='Search via name or postcode'/>
           <Button onPress={() => {}} color='#48BBEC' title='Go' />
+          <Text>Testing</Text>
         </View>
       </View>
     );
