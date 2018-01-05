@@ -11,7 +11,11 @@ export default class Login extends React.Component {
             signUpEmail: "",
             signUpPassword: "",
             signUpPasswordRepeat: "",
-            signUpErrors: false
+            signUpErrors: false,
+            signUpMailError: false,
+            signUpPasswordError: false,
+            signUpPasswordRepeatError: false,
+            message: ""
         };
     }
         
@@ -47,50 +51,46 @@ export default class Login extends React.Component {
     
     _checkSignUp = () => {
         
-        var message = "";
+        this.state.message = "";
+        this.state.signUpErrors = false;
         
         if(!this._validateEmail(this.state.signUpEmail)) {
-            message += "Please enter a valid email\n";
+            this.state.message += "Please enter a valid email\n";
+            this.setState({ signUpMailError: true });
             this.state.signUpErrors = true;
+        } else {
+            this.setState({ signUpMailError: false });
         }
         
         if(this.state.signUpPassword == "") {
-            message += "Please enter a password";
+            this.state.message += "Please enter a password";
+            this.setState({ signUpPasswordError: true });
             this.state.signUpErrors = true;
         } else if(this.state.signUpPassword != this.state.signUpPasswordRepeat) {
-            message += "Please enter matching passwords";
+            this.state.message += "Please enter matching passwords";
+            this.setState({ signUpPasswordRepeatError: true });
             this.state.signUpErrors = true;
         }
         
-        if(this.state.signUpErrors) {
-            
-            /*
-            Alert.alert(
-                "Error",
-                message,
-                [
-                    {text: 'OK'}
-                ],
-                {cancelable: false}
-            )
-            */
-            console.log("Error");
-            
-        } else {
-            this._doSignup();
+        if(this.state.signUpErrors === false) {
+            this._doSignup();   
         }
         
     }
     
     render() {
+        
         return (
             <View style={styles.outerView}>
                 <StatusBar barStyle="light-content" />
                 <Modal visible={this.state.signUpVisible} animationType = {"slide"} transparent = {true}>
                     <KeyboardAvoidingView behavior="padding" style={styles.signUpView}>
                         <Text style={styles.signUpTitle}>Sign up</Text>
+                        {this.state.signUpErrors &&
+                            <Text style={styles.validateErrors}>{this.state.message}</Text>
+                        }
                         <TextInput
-                            style={[styles.signUpInput, styles.error]}
+                            style={[styles.signUpInput, this.state.signUpMailError && styles.error]}
                             placeholder="Email"
                             value={this.state.signUpEmail}
                             placeholderTextColor="rgba(255, 255, 255, .5);"
@@ -103,7 +103,7 @@ export default class Login extends React.Component {
                             autoCorrect={false}
                         />
                         <TextInput
-                            style={styles.signUpInput}
+                            style={[styles.signUpInput, this.state.signUpPasswordError && styles.error]}
                             placeholder="Password"
                             placeholderTextColor="rgba(255, 255, 255, .5);"
                             onChangeText={signUpPassword => this.setState({signUpPassword})}
@@ -113,7 +113,7 @@ export default class Login extends React.Component {
                             onSubmitEditing={() => this.passwordRepeatInput.focus()}
                         />
                         <TextInput
-                            style={styles.signUpInput}
+                            style={[styles.signUpInput, this.state.signUpPasswordRepeatError && styles.error]}
                             placeholder="Repeat password"
                             placeholderTextColor="rgba(255, 255, 255, .5);"
                             onChangeText={signUpPasswordRepeat => this.setState({signUpPasswordRepeat})}
@@ -125,9 +125,6 @@ export default class Login extends React.Component {
                             <Text style={styles.signUpButtonText}>Sign up</Text>
                         </TouchableOpacity>
                         <Button onPress={this._toggleSignUp} title="Cancel" color="rgba(255, 255, 255, .7)" />
-                        <View style={styles.errorHandling}>
-                            <Text>Hejsa</Text>
-                        </View>
                     </KeyboardAvoidingView>
                 </Modal>
                 <View style={styles.titleView}>
@@ -244,7 +241,14 @@ const styles = StyleSheet.create({
         fontWeight: "700"
     },
     error: {
-        borderWidth: 1,
-        borderColor: "red"
+        backgroundColor: "rgba(255, 59, 48, .7)",
+    },
+    validateErrors: {
+        color: "white",
+        textAlign: "left",
+        alignSelf: "stretch",
+        fontSize: 16,
+        marginBottom: 10,
+        lineHeight: 20
     }
 });
